@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Matrix Multiplication</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="application/javascript" src="scripts/matrix.js"></script>
+    <script type="application/javascript" src="scripts/mmult.js"></script>
+</head>
+<body onload="SetNumberOfMatrices()">
+    <div id="wrapper">
+        <div id="content">
+            <h1>Matrix Multiplication Calculator</h1>
+            <div class="spacer"></div>
+            <div class="spacer"></div>
+            <div>
+                <label for="num_matrices">Number of Matrices: </label>
+                <select id="num_matrices" onchange="SetNumberOfMatrices()">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div class="spacer"></div>
+            <div id="main">
+                <div id="matrix_container"></div>
+                <div id="matrix_result"></div>
+                <div class="spacer"></div>
+                <h3 id="mult_text"></h3>
+                <button type="button" onclick="MultiplyMatrices()">Calculate</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
