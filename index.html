@@ -5,30 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title>Matrix Multiplication</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script type="application/javascript" src="scripts/matrix.js"></script>
-    <script type="application/javascript" src="scripts/mmult.js"></script>
+    <script type="application/javascript" src="scripts/transforms.js"></script>
+    <script type="application/javascript" src="scripts/initialize.js"></script>
+    <script type="application/javascript" src="scripts/main.js"></script>
 </head>
-<body onload="SetNumberOfMatrices()">
+<body onload="Init()">
     <div id="wrapper">
         <div id="content">
-            <h1>Matrix Multiplication Calculator</h1>
+            <h1>Matrix Transform Calculator</h1>
             <div class="spacer"></div>
             <div class="spacer"></div>
-            <div>
-                <label for="num_matrices">Number of Matrices: </label>
-                <select id="num_matrices" onchange="SetNumberOfMatrices()">
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
+            <div id="transform_container">
+                <h3 style="margin-bottom: 0.75rem;">Transforms</h3>
+                <div class="transform" v-for="(t, index) in transforms">
+                    <div style="display: inline;">
+                        <select style="width: 150px;" @change="ChangeTransform(index, $event.target.value, t.value)">
+                            <option v-for="(item, key) in types" :value="key" :selected="(t.type === key) ? true : false">{{ item }}</option>
+                        </select>
+                        <span>(</span>
+                        <input class="mat_input" type="text" v-model.number="t.value[0]" @change="ChangeTransform(index, t.type, t.value)"/>
+                        <span v-if="t.type === 'translate' || t.type === 'scale'">,</span>
+                        <input class="mat_input" type="text" v-if="t.type === 'translate' || t.type === 'scale'" v-model.number="t.value[1]" @change="ChangeTransform(index, t.type, t.value)"/>
+                        <span v-if="t.type === 'translate' || t.type === 'scale'">,</span>
+                        <input class="mat_input" type="text" v-if="t.type === 'translate' || t.type === 'scale'" v-model.number="t.value[2]" @change="ChangeTransform(index, t.type, t.value)"/>
+                        <span v-if="t.type === 'translate' || t.type === 'scale'">)</span>
+                        <span v-else>&deg;)</span>
+                    </div>
+                    <button type="button" style="float: right;" v-if="index > 0" @click="RemoveTransform(index)">Remove</button>
+                </div>
+                <button type="button" style="display: block; margin-top: 0.5rem;" :disabled="disable_add" @click="AddTransform">Add</button>
+            </div>
+            <div id="point">
+                <h3>Vertex</h3>
+                <table class="matrix">
+                    <tr><td><input class="mat_input" type="text" v-model.number="vertex.data[0][0]"/></td></tr>
+                    <tr><td><input class="mat_input" type="text" v-model.number="vertex.data[1][0]"/></td></tr>
+                    <tr><td><input class="mat_input" type="text" v-model.number="vertex.data[2][0]"/></td></tr>
+                    <tr><td><input class="mat_input" type="text" v-model.number="vertex.data[3][0]"/></td></tr>
+                </table>
             </div>
             <div class="spacer"></div>
-            <div id="main">
-                <div id="matrix_container"></div>
-                <div id="matrix_result"></div>
-                <div class="spacer"></div>
-                <h3 id="mult_text"></h3>
-                <button type="button" onclick="MultiplyMatrices()">Calculate</button>
+            <div id="matrices">
+                <h3>Compound Transform Matrix</h3>
+                <div style="clear: both;"></div>
+                <span style="float: left; margin-top: 4rem;">M = </span>
+                <div v-for="(t, index) in transforms.slice().reverse()">
+                    <table class="matrix" style="float: left;">
+                        <tr v-for="row in 4">
+                            <td v-for="col in 4"><span class="mat_input">{{ t.mat4x4.values[row-1][col-1].toFixed(1) }}</span></td>
+                        </tr>
+                    </table>
+                    <span style="float: left; margin: 4rem 0.5rem 0 0.5rem;" v-if="index < transforms.length - 1"> &middot; </span>
+                </div>
+                <div style="clear: both;"></div>
+                <span style="float: left; margin-top: 4rem;">&ensp;&nbsp; = </span>
+                <table class="matrix" style="float: left;">
+                    <tr v-for="row in 4">
+                        <td v-for="col in 4"><span class="mat_input">{{ compound.values[row-1][col-1].toFixed(1) }}</span></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="spacer"></div>
+            <div id="matrices">
+                <h3>Final Transformed Vertex</h3>
+                <div style="clear: both;"></div>
+                <span style="float: left; margin-top: 4rem;">V = M &middot;</span>
+                <table class="matrix" style="float: left;">
+                    <tr><td><span class="mat_input">{{ vertex.x.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ vertex.y.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ vertex.z.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ vertex.w.toFixed(1) }}</span></td></tr>
+                </table>
+                <span style="float: left; margin: 4rem 0.5rem 0 0.5rem;" > = </span>
+                <table class="matrix" style="float: left;">
+                    <tr><td><span class="mat_input">{{ final_vertex.x.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ final_vertex.y.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ final_vertex.z.toFixed(1) }}</span></td></tr>
+                    <tr><td><span class="mat_input">{{ final_vertex.w.toFixed(1) }}</span></td></tr>
+                </table>
             </div>
         </div>
     </div>

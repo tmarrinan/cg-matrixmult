@@ -35,13 +35,7 @@ h3 {
     font-style: normal;
 }
 
-h4 {
-    font-size: 1.4rem;
-    font-weight: bold;
-    font-style: normal;
-}
-
-label, select, option {
+label, select, option, span {
     font-size: 1.2rem;
 }
 
@@ -71,18 +65,60 @@ td {
     text-align: center;
 }
 
-#main {
+#transform_container {
+    float: left;
+    width: 600px;
     text-align: left;
 }
 
-#matrix_container {
-    float: left;
-    width: 400px;
+#point {
+    float: right;
+    width: 200px;
+    text-align: left;
 }
 
-#matrix_result {
-    float: right;
-    width: 520px;
+#matrices {
+    text-align: left;
+}
+
+.transform {
+    padding: 0.5rem;
+}
+
+.transform:nth-of-type(odd) {
+    background-color: #EDEDED;
+}
+
+.transform:nth-of-type(even) {
+    background-color: #BABABA;
+}
+
+.matrix {
+    position: relative;
+    margin: 0.75rem;
+}
+
+.matrix:before, .matrix:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    border: 1px solid #000;
+    width: 6px;
+    height: 100%;
+}
+.matrix:before {
+    left: -6px;
+    border-right: 0px;
+}
+.matrix:after {
+    right: -6px;
+    border-left: 0px;
+}
+
+.mat_input {
+    display: inline-block;
+    width: 3rem;
+    text-align: right;
 }
 
 .spacer {
